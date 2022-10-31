@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-model = { path = "../model" }
+model = { path = "../rdkafka-sample-model" }
 bincode = "1"
 rdkafka = "0.28.0"
 tokio = { version = "1", features = ["full"] }

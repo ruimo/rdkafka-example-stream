@@ -47,6 +47,10 @@ async fn filter(args: Args) {
         .create()
         .expect("Producer creation error");
 
+    loop_masking_email(consumer, producer, args).await;
+}
+
+async fn loop_masking_email(consumer: StreamConsumer, producer: FutureProducer, args: Args) {
     let stream_processor = consumer.stream().try_for_each(|borrowed_message| {
         let producer = producer.clone();
         let output_topic = args.to_topic.to_owned();
@@ -67,7 +71,7 @@ async fn filter(args: Args) {
                         tokio::task::spawn_blocking(|| filter_email(user))
                         .await
                         .expect("failed to wait for expensive computation");
-                    
+                
                     let bytes = User::serialize(&masked_user).expect("Cannot serialize user.");
                     producer.send(
                         FutureRecord::to(&output_topic)
@@ -81,7 +85,6 @@ async fn filter(args: Args) {
             Ok(())
         }
     });
-    
     stream_processor.await.expect("stream processing failed");
 }
 
